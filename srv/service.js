@@ -11,7 +11,7 @@ module.exports = async srv => {
   srv.on("READ", BusinessPartnerAddress, req => bupaSrv.tx(req).run(req.query))
   srv.on("READ", BusinessPartner, req => bupaSrv.tx(req).run(req.query))
 
-  messaging.on("refapps/bpems/abc/S4H/BO/BusinessPartner/Created", async msg => {
+  messaging.on("refapps/bpems/abc/sap/s4/beh/businesspartner/v1/BusinessPartner/Created/v1", async msg => {
     console.log("<< event caught", msg);
      let BUSINESSPARTNER = "";	
     if(msg.headers && msg.headers.specversion == "1.0"){	
@@ -35,7 +35,7 @@ module.exports = async srv => {
     }
   });
 
-  messaging.on("refapps/bpems/abc/S4H/BO/BusinessPartner/Changed", async msg => {
+  messaging.on("refapps/bpems/abc/sap/s4/beh/businesspartner/v1/BusinessPartner/Changed/v1", async msg => {
     console.log("<< event caught", msg);
     let BUSINESSPARTNER=""	
     if(msg.headers && msg.headers.specversion == "1.0"){	
