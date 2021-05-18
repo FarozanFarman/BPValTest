@@ -13,7 +13,14 @@ module.exports = async srv => {
 
   messaging.on("refapps/bpems/abc/S4H/BO/BusinessPartner/Created", async msg => {
     console.log("<< event caught", msg);
-    const BUSINESSPARTNER = (+(msg.data.KEY[0].BUSINESSPARTNER)).toString();
+     let BUSINESSPARTNER = "";	
+    if(msg.headers && msg.headers.specversion == "1.0"){	
+       //> Fix for 2020 on-premise	
+      BUSINESSPARTNER = (+(msg.data.BusinessPartner)).toString();	
+    }	
+    else{	
+      BUSINESSPARTNER = (+(msg.data.KEY[0].BUSINESSPARTNER)).toString();	
+    }
     // ID has prefix 000 needs to be removed to read address
     console.log(BUSINESSPARTNER);
     const bpEntity = await bupaSrv.tx(msg).run(SELECT.one(BusinessPartner).where({businessPartnerId: BUSINESSPARTNER}));
@@ -30,7 +37,14 @@ module.exports = async srv => {
 
   messaging.on("refapps/bpems/abc/S4H/BO/BusinessPartner/Changed", async msg => {
     console.log("<< event caught", msg);
-    const BUSINESSPARTNER = (+(msg.data.KEY[0].BUSINESSPARTNER)).toString();
+    let BUSINESSPARTNER=""	
+    if(msg.headers && msg.headers.specversion == "1.0"){	
+       //> Fix for 2020 on-premise	
+        BUSINESSPARTNER = (+(msg.data.BusinessPartner)).toString();	
+    }	
+    else{	
+       BUSINESSPARTNER = (+(msg.data.KEY[0].BUSINESSPARTNER)).toString();	
+    }
     const bpIsAlive = await cds.tx(msg).run(SELECT.one(Notifications, (n) => n.verificationStatus_code).where({businessPartnerId: BUSINESSPARTNER}));
     if(bpIsAlive && bpIsAlive.verificationStatus_code == "V"){
       const bpMarkVerified= await cds.tx(msg).run(UPDATE(Notifications).where({businessPartnerId: BUSINESSPARTNER}).set({verificationStatus_code:"C"}));
